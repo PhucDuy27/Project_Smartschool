@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTf-8" />
+    <title>Ho Chi Minh City University of Technology and Education</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  </head>
+  <body>
+    <div class="header">
+      <h1>
+        <img src="images/ute.png" width="50" height="50" alt="logo" />
+        Trường Đại học Sư Phạm Kỹ Thuật TP.Hồ Chí Minh
+      </h1>
+      <div class="clock">
+        <span id="time">00:00:00</span>
+      </div>
+    </div>
+    <div class="container">
+      <div class="chart">
+        <p>Đồ thị Tem và Humi</p>
+        <canvas id="temperatureHumidityChart"></canvas>
+      </div>
+      <div class="thietbi">
+        <div class="banner">
+          <div class="tag">
+            <button onclick="function_ph()"><b>Phòng họp</b></button>
+            <button onclick="function_plv()"><b>Phòng làm việc</b></button>
+            <button onclick="function_pn()"><b>Phòng ngủ</b></button>
+          </div>
+        </div>
+        <div class="sensor">
+          <div class="nd">
+            <div class="text-info">
+              <p>Nhiệt độ</p>
+            </div>
+            <div class="img-value">
+              <img src="images/tem.png" alt="tem" class="img-nd" />
+              <span id="nhietdo">°C</span>
+            </div>
+          </div>
+          <div class="da">
+            <div class="text-info">
+              <p>Độ ẩm</p>
+            </div>
+            <div class="img-value">
+              <img src="images/humi.png" alt="humi" class="img-da" />
+              <span id="doam">
+                % <i class="fas fa-tint"></i> <!-- icon giọt nước -->
+              </span>
+            </div>
+          </div>
+          <div class="thanhvien">
+            <div class="text-info">
+              <p>Thành viên</p>
+            </div>
+            <div class="img-value">
+              <img src="images/people.png" alt="thanhvien" class="img-people" />
+              <span id="thanhvien"><i class="fas fa-user"></i> <!-- icon người -->
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="control">
+          <div class="item">
+            <img src="images/maylanh.png" id="maylanh" />
+            <h2>Máy lạnh</h2>
+            <div class="buttons">
+              <button type="button" id="btn1">Bật</button>
+              <button type="button" id="btn2">Tắt</button>
+            </div>
+          </div>
+          <div class="item">
+            <img src="images/lamp.png" id="lamp" />
+            <h2>Đèn phòng</h2>
+            <div class="buttons">
+              <button type="button" id="btn3">Bật</button>
+              <button type="button" id="btn4">Tắt</button>
+            </div>
+          </div>
+          <div class="item">
+            <img src="images/warning.png" id="warning" />
+            <h2>Báo cháy</h2>
+            <div class="buttons">
+              <button type="button" id="btn5">Bật</button>
+              <button type="button" id="btn6">Tắt</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <p>
+        <img src="images/ute.png" width="20" height="15">
+        Trường Đại học Sư phạm Kỹ thuật TP.Hồ Chí Minh
+      </p> 
+      <p><i class="fas fa-envelope"></i> Gmail: <a href="mailto:dophucduy3@gmail.com">dophucduy3@gmail.com</a></p>
+      <p>
+        <i class="fas fa-comment"></i> Zalo: 
+        <a href="#" id="zalo-link" onclick="showZaloQR()">0328313042</a>
+      </p>
+    </footer>
+    <!-- Modal để hiển thị mã QR Zalo -->
+    <div id="zaloModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeZaloQR()">x</span>
+        <h3>Quét mã QR</h3>
+        <img id="zalo-qr" src="images/QR.jpg" alt="Mã QR Zalo" />
+        <p>Nhắn tin trực tiếp qua Zalo: <a href="https://zalo.me/0123456789" target="_blank">0328313042</a></p>
+      </div>
+    </div>
+    <script src="function.js"></script>
+    <!-- Thư viện Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-analytics.js"></script>
+    <script>
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      var firebaseConfig = {
+        apiKey: "AIzaSyB6OMjGrFXxj90TU7h4oYhswsdohjmMWoM",
+        authDomain: "study-80122.firebaseapp.com",
+        databaseURL: "https://study-80122-default-rtdb.firebaseio.com",
+        projectId: "study-80122",
+        storageBucket: "study-80122.firebasestorage.app",
+        messagingSenderId: "514076943308",
+        appId: "1:514076943308:web:3fdc9cad8e986d82e3b369",
+        measurementId: "G-JG8SVT9RQV",
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+    </script>
+    <script>
+      //functions
+      var nhietdo_ph = document.getElementById("nhietdo");
+      var dbRef = firebase.database().ref("Phonghop").child("nhietdo_ph");
+      var doam_ph = document.getElementById("doam");
+      var dbRef2 = firebase.database().ref("Phonghop").child("doam_ph");
+      var thanhvien_ph = document.getElementById("thanhvien");
+      var dbRef3 = firebase.database().ref("Phonghop").child("thanhvien_ph");
+
+      var nhietdo_plv = document.getElementById("nhietdo");
+      var dbRef4 = firebase.database().ref("Phonglamviec").child("nhietdo_plv");
+      var doam_plv = document.getElementById("doam");
+      var dbRef5 = firebase.database().ref("Phonglamviec").child("doam_plv");
+      var thanhvien_plv = document.getElementById("thanhvien");
+      var dbRef6 = firebase
+        .database()
+        .ref("Phonglamviec")
+        .child("thanhvien_plv");
+
+      var nhietdo_pn = document.getElementById("nhietdo");
+      var dbRef7 = firebase.database().ref("Phongngu").child("nhietdo_pn");
+      var doam_pn = document.getElementById("doam");
+      var dbRef8 = firebase.database().ref("Phongngu").child("doam_pn");
+      var thanhvien_pn = document.getElementById("thanhvien");
+      var dbRef9 = firebase.database().ref("Phongngu").child("thanhvien_pn");
+    </script>
+    <script>
+      function function_ph() {
+        dbRef.on("value", (snap) => (nhietdo_ph.innerText = snap.val()));
+        dbRef2.on("value", (snap) => (doam_ph.innerText = snap.val()));
+        dbRef3.on("value", (snap) => (thanhvien_ph.innerText = snap.val()));
+      }
+    </script>
+    <script>
+      function function_plv() {
+        dbRef4.on("value", (snap) => (nhietdo_plv.innerText = snap.val()));
+        dbRef5.on("value", (snap) => (doam_plv.innerText = snap.val()));
+        dbRef6.on("value", (snap) => (thanhvien_plv.innerText = snap.val()));
+      }
+    </script>
+    <script>
+      function function_pn() {
+        dbRef7.on("value", (snap) => (nhietdo_pn.innerText = snap.val()));
+        dbRef8.on("value", (snap) => (doam_pn.innerText = snap.val()));
+        dbRef9.on("value", (snap) => (thanhvien_pn.innerText = snap.val()));
+      }
+    </script>
+    </script>
+  </body>
+</html>
